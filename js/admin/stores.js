@@ -1,84 +1,163 @@
-const $ = (id) => document.getElementById(id);
+// ==========================================
+// DEALHUB - ADMIN STORES
+// ==========================================
+
+function getEl(id) {
+    return document.getElementById(id);
+}
 
 
-// ========================================
-// Escape HTML
-// ========================================
+// ==========================================
+// Open Add Store Modal
+// ==========================================
 
-function esc(value) {
-    return String(value ?? "").replace(/[&<>"']/g, function (char) {
-        return {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#039;"
-        }[char];
+function openStoreModal() {
+
+    console.log("openStoreModal() called");
+
+    const modal = getEl("modal");
+    const form = getEl("form");
+
+    if (!modal) {
+        alert("Error: #modal not found in stores.html");
+        return;
+    }
+
+    if (form) {
+        form.reset();
+    }
+
+    getEl("id").value = "";
+
+    getEl("modalTitle").textContent = "Add Store";
+
+    getEl("status").value = "active";
+
+    loadCategories();
+
+    modal.classList.add("show");
+}
+
+
+// ==========================================
+// Close Modal
+// ==========================================
+
+function closeModal() {
+
+    const modal = getEl("modal");
+
+    if (modal) {
+        modal.classList.remove("show");
+    }
+}
+
+
+// ==========================================
+// Load Categories
+// ==========================================
+
+function loadCategories() {
+
+    const categorySelect = getEl("category");
+
+    if (!categorySelect) return;
+
+
+    let categories = [];
+
+    try {
+        categories = DB.categories();
+    } catch (error) {
+
+        console.error("Category error:", error);
+
+        alert("storage.js mein problem hai.");
+
+        return;
+    }
+
+
+    categorySelect.innerHTML =
+        '<option value="">Select Category</option>';
+
+
+    categories.forEach(function(category) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = category.id;
+
+        option.textContent = category.name;
+
+        categorySelect.appendChild(option);
+
     });
 }
 
 
-// ========================================
-// Load Categories
-// ========================================
-
-function fillCategories() {
-
-    const categories = DB.categories();
-
-    const categorySelect = $("category");
-
-    if (!categorySelect) return;
-
-    categorySelect.innerHTML = `
-        <option value="">Select Category</option>
-        ${categories.map(category => `
-            <option value="${esc(category.id)}">
-                ${esc(category.name)}
-            </option>
-        `).join("")}
-    `;
-}
-
-
-// ========================================
+// ==========================================
 // Render Stores
-// ========================================
+// ==========================================
 
 function renderTable() {
 
-    const table = $("table");
+    const table = getEl("table");
 
     if (!table) return;
 
-    const searchInput = $("search");
 
-    const search = searchInput
-        ? searchInput.value.toLowerCase().trim()
-        : "";
+    let stores = [];
 
-    let stores = DB.stores();
+    try {
+        stores = DB.stores();
+    } catch (error) {
+
+        console.error("Stores error:", error);
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="5">
+                    Error loading stores.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    const search =
+        (getEl("search")?.value || "")
+        .toLowerCase()
+        .trim();
+
 
     if (search) {
 
-        stores = stores.filter(store => {
+        stores = stores.filter(function(store) {
 
-            return `
-                ${store.name || ""}
-                ${store.description || ""}
-                ${store.website || ""}
-            `.toLowerCase().includes(search);
+            return (
+                (store.name || "")
+                    .toLowerCase()
+                    .includes(search)
+                ||
+                (store.description || "")
+                    .toLowerCase()
+                    .includes(search)
+            );
 
         });
 
     }
 
 
-    if (!stores.length) {
+    if (stores.length === 0) {
 
         table.innerHTML = `
             <tr>
-                <td colspan="5" class="muted">
+                <td colspan="5">
                     No stores found.
                 </td>
             </tr>
@@ -88,116 +167,91 @@ function renderTable() {
     }
 
 
-    const coupons = DB.coupons();
-
-    table.innerHTML = stores.map(store => {
-
-        const category = DB.categories().find(
-            category => category.id === store.categoryId
-        );
+    table.innerHTML = "";
 
 
-        const couponCount = coupons.filter(
-            coupon => coupon.storeId === store.id
-        ).length;
+    stores.forEach(function(store) {
+
+        const category =
+            DB.categories().find(function(cat) {
+                return cat.id === store.categoryId;
+            });
 
 
-        return `
-            <tr>
-
-                <td>
-                    <strong>
-                        ${esc(store.name)}
-                    </strong>
-                </td>
+        const couponCount =
+            DB.coupons().filter(function(coupon) {
+                return coupon.storeId === store.id;
+            }).length;
 
 
-                <td>
-                    ${esc(category?.name || "Uncategorized")}
-                </td>
+        const row =
+            document.createElement("tr");
 
 
-                <td>
-                    ${couponCount}
-                </td>
+        row.innerHTML = `
 
+            <td>
+                <strong>
+                    ${store.name || ""}
+                </strong>
+            </td>
 
-                <td>
+            <td>
+                ${category ? category.name : "Uncategorized"}
+            </td>
 
-                    <span class="badge ${
-                        store.status === "active"
-                            ? "active-badge"
-                            : "inactive-badge"
-                    }">
+            <td>
+                ${couponCount}
+            </td>
 
-                        ${esc(store.status || "active")}
+            <td>
+                <span class="badge ${
+                    store.status === "active"
+                        ? "active-badge"
+                        : "inactive-badge"
+                }">
+                    ${store.status || "active"}
+                </span>
+            </td>
 
-                    </span>
+            <td class="actions">
 
-                </td>
+                <button
+                    type="button"
+                    onclick="editStore('${store.id}')">
+                    Edit
+                </button>
 
+                <button
+                    type="button"
+                    class="danger"
+                    onclick="deleteStore('${store.id}')">
+                    Delete
+                </button>
 
-                <td class="actions">
+            </td>
 
-                    <button
-                        type="button"
-                        onclick="editStore('${esc(store.id)}')">
-
-                        Edit
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="danger"
-                        onclick="deleteStore('${esc(store.id)}')">
-
-                        Delete
-
-                    </button>
-
-                </td>
-
-            </tr>
         `;
 
-    }).join("");
+
+        table.appendChild(row);
+
+    });
 }
 
 
-// ========================================
-// Open Add / Edit Modal
-// ========================================
+// ==========================================
+// Edit Store
+// ==========================================
 
-function openStoreModal(id = "") {
+function editStore(id) {
 
-    fillCategories();
+    const stores = DB.stores();
 
-    $("form").reset();
-
-    $("id").value = id;
-
-    $("modalTitle").textContent =
-        id ? "Edit Store" : "Add Store";
-
-
-    // Add Store
-    if (!id) {
-
-        $("status").value = "active";
-
-        $("modal").classList.add("show");
-
-        return;
-    }
-
-
-    // Edit Store
-
-    const store = DB.stores().find(
-        item => item.id === id
-    );
+    const store =
+        stores.find(function(item) {
+            return item.id === id;
+        });
 
 
     if (!store) {
@@ -208,232 +262,208 @@ function openStoreModal(id = "") {
     }
 
 
-    $("name").value =
+    loadCategories();
+
+
+    getEl("id").value = store.id;
+
+    getEl("name").value =
         store.name || "";
 
-    $("slug").value =
+    getEl("slug").value =
         store.slug || "";
 
-    $("logo").value =
+    getEl("logo").value =
         store.logo || "";
 
-    $("website").value =
+    getEl("website").value =
         store.website || "";
 
-    $("category").value =
+    getEl("category").value =
         store.categoryId || "";
 
-    $("description").value =
+    getEl("description").value =
         store.description || "";
 
-    $("status").value =
+    getEl("status").value =
         store.status || "active";
 
 
-    $("modal").classList.add("show");
+    getEl("modalTitle").textContent =
+        "Edit Store";
+
+
+    getEl("modal").classList.add("show");
 }
 
 
-// ========================================
-// Close Modal
-// ========================================
-
-function closeModal() {
-
-    $("modal").classList.remove("show");
-
-}
-
-
-// ========================================
-// Edit Store
-// ========================================
-
-function editStore(id) {
-
-    openStoreModal(id);
-
-}
-
-
-// ========================================
+// ==========================================
 // Delete Store
-// ========================================
+// ==========================================
 
 function deleteStore(id) {
 
-    const store = DB.stores().find(
-        item => item.id === id
-    );
+    const stores = DB.stores();
+
+    const store =
+        stores.find(function(item) {
+            return item.id === id;
+        });
 
 
     if (!store) return;
 
 
-    const confirmed = confirm(
-        `Delete "${store.name}"?`
-    );
+    if (!confirm(
+        'Delete "' + store.name + '"?'
+    )) {
+        return;
+    }
 
 
-    if (!confirmed) return;
+    const updatedStores =
+        stores.filter(function(item) {
+            return item.id !== id;
+        });
 
 
-    const stores = DB.stores().filter(
-        item => item.id !== id
-    );
+    DB.saveStores(updatedStores);
+
+
+    renderTable();
+}
+
+
+// ==========================================
+// Save Store
+// ==========================================
+
+function saveStore(event) {
+
+    event.preventDefault();
+
+
+    const name =
+        getEl("name").value.trim();
+
+
+    const category =
+        getEl("category").value;
+
+
+    if (!name) {
+
+        alert("Please enter Store Name.");
+
+        return;
+    }
+
+
+    if (!category) {
+
+        alert("Please select a Category.");
+
+        return;
+    }
+
+
+    const stores = DB.stores();
+
+
+    let id =
+        getEl("id").value;
+
+
+    if (!id) {
+
+        id =
+            "store_" + Date.now();
+
+    }
+
+
+    let slug =
+        getEl("slug").value.trim();
+
+
+    if (!slug) {
+
+        slug =
+            name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+
+    }
+
+
+    const store = {
+
+        id: id,
+
+        name: name,
+
+        slug: slug,
+
+        logo:
+            getEl("logo").value.trim(),
+
+        website:
+            getEl("website").value.trim(),
+
+        categoryId:
+            category,
+
+        description:
+            getEl("description").value.trim(),
+
+        status:
+            getEl("status").value
+
+    };
+
+
+    const index =
+        stores.findIndex(function(item) {
+            return item.id === id;
+        });
+
+
+    if (index >= 0) {
+
+        stores[index] = store;
+
+    } else {
+
+        stores.push(store);
+
+    }
 
 
     DB.saveStores(stores);
 
+
+    closeModal();
 
     renderTable();
 
 }
 
 
-// ========================================
-// Save Store
-// ========================================
-
-$("form").addEventListener(
-    "submit",
-    function (event) {
-
-        event.preventDefault();
-
-
-        const name =
-            $("name").value.trim();
-
-
-        const categoryId =
-            $("category").value;
-
-
-        // Validate name
-
-        if (!name) {
-
-            alert("Please enter store name.");
-
-            $("name").focus();
-
-            return;
-        }
-
-
-        // Validate category
-
-        if (!categoryId) {
-
-            alert("Please select a category.");
-
-            $("category").focus();
-
-            return;
-        }
-
-
-        // Existing ID or new ID
-
-        const id =
-            $("id").value ||
-            "store_" + Date.now();
-
-
-        // Generate slug automatically
-
-        let slug =
-            $("slug").value.trim();
-
-
-        if (!slug) {
-
-            slug = name
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, "-")
-                .replace(/^-+|-+$/g, "");
-
-        }
-
-
-        const store = {
-
-            id: id,
-
-            name: name,
-
-            slug: slug,
-
-            logo:
-                $("logo").value.trim(),
-
-            website:
-                $("website").value.trim(),
-
-            categoryId:
-                categoryId,
-
-            description:
-                $("description").value.trim(),
-
-            status:
-                $("status").value || "active"
-
-        };
-
-
-        const stores = DB.stores();
-
-
-        // Check existing store
-
-        const existingIndex =
-            stores.findIndex(
-                item => item.id === id
-            );
-
-
-        if (existingIndex !== -1) {
-
-            // Update
-
-            stores[existingIndex] = store;
-
-        } else {
-
-            // Add new
-
-            stores.push(store);
-
-        }
-
-
-        // Save LocalStorage
-
-        DB.saveStores(stores);
-
-
-        // Close
-
-        closeModal();
-
-
-        // Refresh table
-
-        renderTable();
-
-    }
-);
-
-
-// ========================================
+// ==========================================
 // Search
-// ========================================
+// ==========================================
 
-if ($("search")) {
+function setupSearch() {
 
-    $("search").addEventListener(
+    const search =
+        getEl("search");
+
+
+    if (!search) return;
+
+
+    search.addEventListener(
         "input",
         renderTable
     );
@@ -441,28 +471,35 @@ if ($("search")) {
 }
 
 
-// ========================================
-// Close modal when clicking outside
-// ========================================
+// ==========================================
+// Initialize
+// ==========================================
 
-$("modal").addEventListener(
-    "click",
-    function (event) {
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
 
-        if (event.target === $("modal")) {
+        console.log("Stores JS loaded");
 
-            closeModal();
+        loadCategories();
+
+        renderTable();
+
+        setupSearch();
+
+
+        const form =
+            getEl("form");
+
+
+        if (form) {
+
+            form.addEventListener(
+                "submit",
+                saveStore
+            );
 
         }
 
     }
 );
-
-
-// ========================================
-// Initial Load
-// ========================================
-
-fillCategories();
-
-renderTable();
