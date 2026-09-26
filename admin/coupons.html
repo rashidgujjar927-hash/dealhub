@@ -439,6 +439,47 @@
 
 <script src="../js/storage.js"></script>
 
+    <script>
+const DB = {
+    coupons: function () {
+        try {
+            return JSON.parse(
+                localStorage.getItem("dealhub_coupons")
+            ) || [];
+        } catch (e) {
+            return [];
+        }
+    },
+
+    saveCoupons: function (data) {
+        localStorage.setItem(
+            "dealhub_coupons",
+            JSON.stringify(data)
+        );
+        return data;
+    },
+
+    stores: function () {
+        try {
+            return JSON.parse(
+                localStorage.getItem("dealhub_stores")
+            ) || [];
+        } catch (e) {
+            return [];
+        }
+    },
+
+    categories: function () {
+        try {
+            return JSON.parse(
+                localStorage.getItem("dealhub_categories")
+            ) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+};
+</script>
 
 <!-- Coupon Admin Logic -->
 
