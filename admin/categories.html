@@ -557,7 +557,7 @@
 
   async function getCategories() {
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("categories")
       .select("*")
       .order("name", { ascending: true });
@@ -574,7 +574,7 @@
 
   async function getStores() {
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("stores")
       .select("id, category_id");
 
@@ -589,7 +589,7 @@
 
   async function getCoupons() {
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("coupons")
       .select("id, store_id");
 
@@ -864,7 +864,7 @@
       }
 
 
-      const { data: existing } = await supabase
+      const { data: existing } = await supabaseClient
         .from("categories")
         .select("id")
         .eq("slug", slug)
@@ -889,7 +889,7 @@
       };
 
 
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from("categories")
         .upsert(category);
 
@@ -934,7 +934,7 @@
     }
 
 
-    const { data: stores } = await supabase
+    const { data: stores } = await supabaseClient
       .from("stores")
       .select("id")
       .eq("category_id", id);
@@ -965,7 +965,7 @@
     }
 
 
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from("categories")
       .delete()
       .eq("id", id);
