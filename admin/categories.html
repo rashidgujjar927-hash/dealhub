@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Categories - DealHub Admin</title>
+
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+
+<body>
+
+    <div class="admin-layout">
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+
+            <a href="dashboard.html" class="admin-brand">
+                Deal<span>Hub</span>
+                <small>ADMIN PANEL</small>
+            </a>
+
+
+            <nav>
+
+                <a href="dashboard.html">
+                    📊 Dashboard
+                </a>
+
+                <a href="stores.html">
+                    🏪 Stores
+                </a>
+
+                <a href="coupons.html">
+                    🎟️ Coupons
+                </a>
+
+                <a href="categories.html" class="active">
+                    🏷️ Categories
+                </a>
+
+            </nav>
+
+
+            <a href="../index.html" class="back">
+                ← View Website
+            </a>
+
+        </aside>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <main class="admin-main">
+
+            <!-- TOP BAR -->
+
+            <div class="topbar">
+
+                <div>
+
+                    <p class="eyebrow">
+                        MANAGEMENT
+                    </p>
+
+                    <h1>
+                        Categories
+                    </h1>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    onclick="openCategoryModal()">
+
+                    + Add Category
+
+                </button>
+
+            </div>
+
+
+            <!-- ================= CATEGORY TABLE ================= -->
+
+            <div class="panel">
+
+                <div class="panel-head">
+
+                    <div>
+
+                        <h2>
+                            All Categories
+                        </h2>
+
+                        <p class="muted">
+                            Manage your website categories.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Category
+                                </th>
+
+                                <th>
+                                    Slug
+                                </th>
+
+                                <th>
+                                    Stores
+                                </th>
+
+                                <th>
+                                    Coupons
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="categoryTable">
+
+                            <!-- Categories will be loaded here -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+
+    <!-- ================= ADD / EDIT MODAL ================= -->
+
+    <div
+        id="categoryModal"
+        class="modal">
+
+        <div class="modal-box">
+
+            <!-- Modal Header -->
+
+            <div class="modal-head">
+
+                <div>
+
+                    <p class="eyebrow">
+                        CATEGORY
+                    </p>
+
+                    <h2 id="modalTitle">
+                        Add Category
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    onclick="closeCategoryModal()">
+
+                    ×
+
+                </button>
+
+            </div>
+
+
+
+            <!-- Category Form -->
+
+            <form id="categoryForm">
+
+                <!-- Hidden ID -->
+
+                <input
+                    type="hidden"
+                    id="categoryId">
+
+
+                <!-- Name -->
+
+                <label>
+
+                    Category Name
+
+                    <input
+                        type="text"
+                        id="categoryName"
+                        class="form-control"
+                        placeholder="e.g. Fashion"
+                        required>
+
+                </label>
+
+
+                <!-- Slug -->
+
+                <label>
+
+                    Slug
+
+                    <input
+                        type="text"
+                        id="categorySlug"
+                        class="form-control"
+                        placeholder="fashion">
+
+                    <small class="field-help">
+                        Leave empty to generate automatically.
+                    </small>
+
+                </label>
+
+
+                <!-- Icon -->
+
+                <label>
+
+                    Icon / Emoji
+
+                    <input
+                        type="text"
+                        id="categoryIcon"
+                        class="form-control"
+                        placeholder="👕">
+
+                </label>
+
+
+                <!-- Status -->
+
+                <label>
+
+                    Status
+
+                    <select
+                        id="categoryStatus"
+                        class="form-control">
+
+                        <option value="active">
+                            Active
+                        </option>
+
+                        <option value="inactive">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </label>
+
+
+                <!-- Buttons -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        onclick="closeCategoryModal()">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn-primary">
+
+                        Save Category
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <!-- LocalStorage Database -->
+
+    <script src="../js/storage.js"></script>
+
+
+    <script>
+
+        /*
+        =====================================================
+        CATEGORY MANAGEMENT
+        =====================================================
+        */
+
+
+        const categoryTable =
+            document.getElementById("categoryTable");
+
+        const categoryModal =
+            document.getElementById("categoryModal");
+
+        const categoryForm =
+            document.getElementById("categoryForm");
+
+
+        /*
+        =====================================================
+        ESCAPE HTML
+        =====================================================
+        */
+
+        function escapeHTML(value) {
+
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /*
+        =====================================================
+        GET CATEGORY DATA
+        =====================================================
+        */
+
+        function getCategories() {
+
+            return DB.categories();
+
+        }
+
+
+        /*
+        =====================================================
+        SAVE CATEGORY DATA
+        =====================================================
+        */
+
+        function saveCategories(categories) {
+
+            DB.saveCategories(categories);
+
+        }
+
+
+        /*
+        =====================================================
+        GENERATE SLUG
+        =====================================================
+        */
+
+        function generateSlug(name) {
+
+            return name
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+
+        }
+
+
+        /*
+        =====================================================
+        RENDER CATEGORY TABLE
+        =====================================================
+        */
+
+        function renderCategories() {
+
+            const categories =
+                getCategories();
+
+            const stores =
+                DB.stores();
+
+            const coupons =
+                DB.coupons();
+
+
+            if (!categories.length) {
+
+                categoryTable.innerHTML = `
+                    <tr>
+                        <td colspan="6">
+
+                            <div class="empty-state">
+
+                                <div class="empty-icon">
+                                    🏷️
+                                </div>
+
+                                <h3>
+                                    No Categories Found
+                                </h3>
+
+                                <p>
+                                    Add your first category
+                                    to get started.
+                                </p>
+
+                                <button
+                                    class="btn-primary"
+                                    onclick="openCategoryModal()">
+
+                                    + Add Category
+
+                                </button>
+
+                            </div>
+
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            categoryTable.innerHTML =
+                categories.map(category => {
+
+                    /*
+                    Count stores belonging
+                    to this category.
+                    */
+
+                    const storeCount =
+                        stores.filter(
+                            store =>
+                                store.categoryId === category.id
+                        ).length;
+
+
+                    /*
+                    Find stores in category,
+                    then count their coupons.
+                    */
+
+                    const categoryStoreIds =
+                        stores
+                            .filter(
+                                store =>
+                                    store.categoryId === category.id
+                            )
+                            .map(store => store.id);
+
+
+                    const couponCount =
+                        coupons.filter(
+                            coupon =>
+                                categoryStoreIds.includes(
+                                    coupon.storeId
+                                )
+                        ).length;
+
+
+                    const statusClass =
+                        category.status === "active"
+                            ? "active-badge"
+                            : "inactive-badge";
+
+
+                    return `
+
+                        <tr>
+
+                            <!-- Category -->
+
+                            <td>
+
+                                <div class="category-name">
+
+                                    <span class="category-icon-small">
+
+                                        ${escapeHTML(
+                                            category.icon || "🏷️"
+                                        )}
+
+                                    </span>
+
+                                    <strong>
+
+                                        ${escapeHTML(
+                                            category.name
+                                        )}
+
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- Slug -->
+
+                            <td>
+
+                                <code>
+
+                                    ${escapeHTML(
+                                        category.slug
+                                    )}
+
+                                </code>
+
+                            </td>
+
+
+                            <!-- Stores -->
+
+                            <td>
+
+                                ${storeCount}
+
+                            </td>
+
+
+                            <!-- Coupons -->
+
+                            <td>
+
+                                ${couponCount}
+
+                            </td>
+
+
+                            <!-- Status -->
+
+                            <td>
+
+                                <span
+                                    class="badge ${statusClass}">
+
+                                    ${escapeHTML(
+                                        category.status
+                                    )}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- Actions -->
+
+                            <td class="actions">
+
+                                <button
+                                    type="button"
+                                    onclick="editCategory('${category.id}')">
+
+                                    Edit
+
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="danger"
+                                    onclick="deleteCategory('${category.id}')">
+
+                                    Delete
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }).join("");
+
+        }
+
+
+        /*
+        =====================================================
+        OPEN ADD MODAL
+        =====================================================
+        */
+
+        function openCategoryModal() {
+
+            categoryForm.reset();
+
+
+            document.getElementById(
+                "categoryId"
+            ).value = "";
+
+
+            document.getElementById(
+                "modalTitle"
+            ).textContent =
+                "Add Category";
+
+
+            document.getElementById(
+                "categoryIcon"
+            ).value = "🏷️";
+
+
+            document.getElementById(
+                "categoryStatus"
+            ).value = "active";
+
+
+            categoryModal.classList.add("show");
+
+        }
+
+
+        /*
+        =====================================================
+        OPEN EDIT MODAL
+        =====================================================
+        */
+
+        function editCategory(id) {
+
+            const categories =
+                getCategories();
+
+
+            const category =
+                categories.find(
+                    item => item.id === id
+                );
+
+
+            if (!category) {
+
+                alert("Category not found.");
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "categoryId"
+            ).value =
+                category.id;
+
+
+            document.getElementById(
+                "categoryName"
+            ).value =
+                category.name || "";
+
+
+            document.getElementById(
+                "categorySlug"
+            ).value =
+                category.slug || "";
+
+
+            document.getElementById(
+                "categoryIcon"
+            ).value =
+                category.icon || "🏷️";
+
+
+            document.getElementById(
+                "categoryStatus"
+            ).value =
+                category.status || "active";
+
+
+            document.getElementById(
+                "modalTitle"
+            ).textContent =
+                "Edit Category";
+
+
+            categoryModal.classList.add("show");
+
+        }
+
+
+        /*
+        =====================================================
+        CLOSE MODAL
+        =====================================================
+        */
+
+        function closeCategoryModal() {
+
+            categoryModal.classList.remove("show");
+
+        }
+
+
+        /*
+        =====================================================
+        CLOSE MODAL WHEN CLICKING OUTSIDE
+        =====================================================
+        */
+
+        categoryModal.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target === categoryModal
+                ) {
+
+                    closeCategoryModal();
+
+                }
+
+            }
+        );
+
+
+        /*
+        =====================================================
+        SAVE CATEGORY
+        =====================================================
+        */
+
+        categoryForm.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                const id =
+                    document.getElementById(
+                        "categoryId"
+                    ).value;
+
+
+                const name =
+                    document.getElementById(
+                        "categoryName"
+                    ).value.trim();
+
+
+                let slug =
+                    document.getElementById(
+                        "categorySlug"
+                    ).value.trim();
+
+
+                const icon =
+                    document.getElementById(
+                        "categoryIcon"
+                    ).value.trim() ||
+                    "🏷️";
+
+
+                const status =
+                    document.getElementById(
+                        "categoryStatus"
+                    ).value;
+
+
+                /*
+                Generate slug automatically
+                if user leaves it empty.
+                */
+
+                if (!slug) {
+
+                    slug =
+                        generateSlug(name);
+
+                }
+
+
+                if (!name) {
+
+                    alert(
+                        "Please enter category name."
+                    );
+
+                    return;
+
+                }
+
+
+                let categories =
+                    getCategories();
+
+
+                /*
+                Check duplicate slug
+                */
+
+                const duplicate =
+                    categories.find(
+                        category =>
+                            category.slug === slug &&
+                            category.id !== id
+                    );
+
+
+                if (duplicate) {
+
+                    alert(
+                        "This category slug already exists."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                EDIT EXISTING
+                */
+
+                if (id) {
+
+                    const index =
+                        categories.findIndex(
+                            category =>
+                                category.id === id
+                        );
+
+
+                    if (index !== -1) {
+
+                        categories[index] = {
+
+                            ...categories[index],
+
+                            name: name,
+
+                            slug: slug,
+
+                            icon: icon,
+
+                            status: status
+
+                        };
+
+                    }
+
+                }
+
+
+                /*
+                ADD NEW
+                */
+
+                else {
+
+                    categories.push({
+
+                        id:
+                            "cat_" +
+                            Date.now(),
+
+                        name:
+                            name,
+
+                        slug:
+                            slug,
+
+                        icon:
+                            icon,
+
+                        status:
+                            status
+
+                    });
+
+                }
+
+
+                /*
+                Save to LocalStorage
+                */
+
+                saveCategories(
+                    categories
+                );
+
+
+                /*
+                Close modal
+                */
+
+                closeCategoryModal();
+
+
+                /*
+                Refresh table
+                */
+
+                renderCategories();
+
+            }
+        );
+
+
+        /*
+        =====================================================
+        DELETE CATEGORY
+        =====================================================
+        */
+
+        function deleteCategory(id) {
+
+            const categories =
+                getCategories();
+
+
+            const category =
+                categories.find(
+                    item => item.id === id
+                );
+
+
+            if (!category) {
+
+                return;
+
+            }
+
+
+            /*
+            Check whether category
+            is currently used by stores.
+            */
+
+            const usedByStore =
+                DB.stores().some(
+                    store =>
+                        store.categoryId === id
+                );
+
+
+            if (usedByStore) {
+
+                alert(
+                    "This category is currently used by one or more stores. Please change those stores to another category before deleting it."
+                );
+
+                return;
+
+            }
+
+
+            const confirmed =
+                confirm(
+                    `Delete "${category.name}" category?`
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            const updatedCategories =
+                categories.filter(
+                    item =>
+                        item.id !== id
+                );
+
+
+            saveCategories(
+                updatedCategories
+            );
+
+
+            renderCategories();
+
+        }
+
+
+        /*
+        =====================================================
+        INITIAL LOAD
+        =====================================================
+        */
+
+        renderCategories();
+
+    </script>
+
+</body>
+</html>
