@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Stores - DealHub Admin</title>
+
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+
+<body>
+
+    <div class="admin-layout">
+
+
+        <!-- ==================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="sidebar">
+
+            <a href="dashboard.html" class="admin-brand">
+                Deal<span>Hub</span>
+                <small>ADMIN PANEL</small>
+            </a>
+
+
+            <nav>
+
+                <a href="dashboard.html">
+                    📊 Dashboard
+                </a>
+
+                <a href="stores.html" class="active">
+                    🏪 Stores
+                </a>
+
+                <a href="coupons.html">
+                    🎟️ Coupons
+                </a>
+
+                <a href="categories.html">
+                    🏷️ Categories
+                </a>
+
+            </nav>
+
+
+            <a href="../index.html" class="back">
+                ← View Website
+            </a>
+
+        </aside>
+
+
+
+        <!-- ==================================================
+             MAIN CONTENT
+        ================================================== -->
+
+        <main class="admin-main">
+
+
+            <!-- TOP BAR -->
+
+            <div class="topbar">
+
+                <div>
+
+                    <p class="eyebrow">
+                        MANAGE
+                    </p>
+
+                    <h1>
+                        Stores
+                    </h1>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    onclick="openStoreModal()">
+
+                    + Add Store
+
+                </button>
+
+            </div>
+
+
+
+            <!-- ==================================================
+                 STORE PANEL
+            ================================================== -->
+
+            <div class="panel">
+
+
+                <!-- Search -->
+
+                <div class="table-tools">
+
+                    <input
+                        type="text"
+                        id="search"
+                        placeholder="Search stores..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+
+                <!-- Table -->
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Store
+                                </th>
+
+                                <th>
+                                    Category
+                                </th>
+
+                                <th>
+                                    Coupons
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="table">
+
+                            <!--
+                                Stores will be loaded
+                                from LocalStorage here.
+                            -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         ADD / EDIT STORE MODAL
+    ================================================== -->
+
+    <div
+        id="modal"
+        class="modal">
+
+
+        <div class="modal-box">
+
+
+            <!-- Modal Header -->
+
+            <div class="modal-head">
+
+                <h2 id="modalTitle">
+                    Add Store
+                </h2>
+
+
+                <button
+                    type="button"
+                    onclick="closeModal()">
+
+                    ×
+
+                </button>
+
+            </div>
+
+
+
+            <!-- Store Form -->
+
+            <form id="form">
+
+
+                <!-- Hidden ID -->
+
+                <input
+                    type="hidden"
+                    id="id"
+                >
+
+
+
+                <!-- Store Name -->
+
+                <label>
+
+                    Store Name
+
+                    <input
+                        class="form-control"
+                        type="text"
+                        id="name"
+                        placeholder="e.g. Nike"
+                        required
+                    >
+
+                </label>
+
+
+
+                <!-- Slug -->
+
+                <label>
+
+                    Slug
+
+                    <input
+                        class="form-control"
+                        type="text"
+                        id="slug"
+                        placeholder="nike"
+                    >
+
+                </label>
+
+
+
+                <!-- Logo -->
+
+                <label>
+
+                    Logo URL
+
+                    <input
+                        class="form-control"
+                        type="url"
+                        id="logo"
+                        placeholder="https://example.com/logo.png"
+                    >
+
+                </label>
+
+
+
+                <!-- Website -->
+
+                <label>
+
+                    Website
+
+                    <input
+                        class="form-control"
+                        type="url"
+                        id="website"
+                        placeholder="https://example.com"
+                    >
+
+                </label>
+
+
+
+                <!-- Category -->
+
+                <label>
+
+                    Category
+
+                    <select
+                        class="form-control"
+                        id="category"
+                        required>
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                    </select>
+
+                </label>
+
+
+
+                <!-- Description -->
+
+                <label>
+
+                    Description
+
+                    <textarea
+                        class="form-control"
+                        id="description"
+                        placeholder="Enter store description..."
+                    ></textarea>
+
+                </label>
+
+
+
+                <!-- Status -->
+
+                <label>
+
+                    Status
+
+                    <select
+                        class="form-control"
+                        id="status">
+
+                        <option value="active">
+                            Active
+                        </option>
+
+                        <option value="inactive">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </label>
+
+
+
+                <!-- Submit -->
+
+                <button
+                    type="submit"
+                    class="btn-primary">
+
+                    Save Store
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         JAVASCRIPT
+    ================================================== -->
+
+    <!-- LocalStorage Database -->
+    <script src="../js/storage.js"></script>
+
+    <!-- Store Management -->
+    <script src="../js/admin/stores.js"></script>
+
+
+</body>
+</html>
