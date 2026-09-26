@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,9 +9,7 @@
   <link rel="stylesheet" href="../css/admin.css">
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -119,8 +118,7 @@
       border-collapse: collapse;
     }
 
-    th,
-    td {
+    th, td {
       padding: 14px 12px;
       border-bottom: 1px solid #edf0f5;
       text-align: left;
@@ -197,8 +195,6 @@
       font-size: 40px;
       margin-bottom: 10px;
     }
-
-    /* Modal */
 
     .modal {
       position: fixed;
@@ -341,7 +337,6 @@
 
 <div class="admin-layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
 
     <div class="admin-brand">
@@ -357,8 +352,6 @@
 
   </aside>
 
-
-  <!-- MAIN -->
   <main class="admin-main">
 
     <div class="topbar">
@@ -378,14 +371,12 @@
 
     </div>
 
-
     <div class="panel">
 
       <div class="panel-head">
         <h2>All Categories</h2>
         <span id="categoryCount" class="muted"></span>
       </div>
-
 
       <div class="table-wrap">
 
@@ -402,8 +393,7 @@
             </tr>
           </thead>
 
-          <tbody id="categoriesTable">
-          </tbody>
+          <tbody id="categoriesTable"></tbody>
 
         </table>
 
@@ -415,8 +405,6 @@
 
 </div>
 
-
-<!-- ADD / EDIT MODAL -->
 
 <div class="modal" id="categoryModal">
 
@@ -436,14 +424,9 @@
 
     </div>
 
-
     <form id="categoryForm">
 
-      <input
-        type="hidden"
-        id="categoryId"
-      >
-
+      <input type="hidden" id="categoryId">
 
       <div class="form-group">
 
@@ -460,7 +443,6 @@
         >
 
       </div>
-
 
       <div class="form-group">
 
@@ -481,7 +463,6 @@
 
       </div>
 
-
       <div class="form-group">
 
         <label for="categoryIcon">
@@ -496,7 +477,6 @@
         >
 
       </div>
-
 
       <div class="form-group">
 
@@ -513,7 +493,6 @@
         </select>
 
       </div>
-
 
       <div class="form-actions">
 
@@ -541,67 +520,18 @@
 </div>
 
 
-<!-- DATABASE -->
+<!-- SUPABASE -->
 
-<script src="../js/storage.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
 
-  <script>
-const DB = {
-    categories: function () {
-        try {
-            return JSON.parse(
-                localStorage.getItem("dealhub_categories")
-            ) || [];
-        } catch (e) {
-            return [];
-        }
-    },
-
-    saveCategories: function (data) {
-        localStorage.setItem(
-            "dealhub_categories",
-            JSON.stringify(data)
-        );
-        return data;
-    },
-
-    stores: function () {
-        try {
-            return JSON.parse(
-                localStorage.getItem("dealhub_stores")
-            ) || [];
-        } catch (e) {
-            return [];
-        }
-    },
-
-    coupons: function () {
-        try {
-            return JSON.parse(
-                localStorage.getItem("dealhub_coupons")
-            ) || [];
-        } catch (e) {
-            return [];
-        }
-    }
-};
-</script>
-
-
-<!-- CATEGORY SCRIPT -->
 
 <script>
 
-  /* =========================
-     ESCAPE HTML
-  ========================= */
-
   function escapeHTML(value) {
-
     return String(value ?? "").replace(
       /[&<>"']/g,
-      function (char) {
-
+      function(char) {
         const map = {
           "&": "&amp;",
           "<": "&lt;",
@@ -611,44 +541,68 @@ const DB = {
         };
 
         return map[char];
-
       }
     );
-
   }
 
-
-  /* =========================
-     GET CATEGORIES
-  ========================= */
-
-  function getCategories() {
-
-    return DB.categories();
-
-  }
-
-
-  /* =========================
-     GENERATE SLUG
-  ========================= */
 
   function generateSlug(text) {
-
     return String(text || "")
       .toLowerCase()
       .trim()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
-
   }
 
 
-  /* =========================
-     RENDER CATEGORIES
-  ========================= */
+  async function getCategories() {
 
-  function renderCategories() {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .order("name", { ascending: true });
+
+    if (error) {
+      console.error(error);
+      alert(error.message);
+      return [];
+    }
+
+    return data || [];
+  }
+
+
+  async function getStores() {
+
+    const { data, error } = await supabase
+      .from("stores")
+      .select("id, category_id");
+
+    if (error) {
+      console.error(error);
+      return [];
+    }
+
+    return data || [];
+  }
+
+
+  async function getCoupons() {
+
+    const { data, error } = await supabase
+      .from("coupons")
+      .select("id, store_id");
+
+    if (error) {
+      console.error(error);
+      return [];
+    }
+
+    return data || [];
+  }
+
+
+  async function renderCategories() {
 
     const table =
       document.getElementById("categoriesTable");
@@ -656,16 +610,16 @@ const DB = {
     const count =
       document.getElementById("categoryCount");
 
-    const categories = getCategories();
-
-    const stores = DB.stores();
-
-    const coupons = DB.coupons();
+    const categories = await getCategories();
+    const stores = await getStores();
+    const coupons = await getCoupons();
 
 
     count.textContent =
       categories.length +
-      (categories.length === 1 ? " category" : " categories");
+      (categories.length === 1
+        ? " category"
+        : " categories");
 
 
     if (!categories.length) {
@@ -682,32 +636,26 @@ const DB = {
       `;
 
       return;
-
     }
 
 
     table.innerHTML = categories.map(function(category) {
 
-      const storeCount =
-        stores.filter(function(store) {
-          return store.categoryId === category.id;
-        }).length;
+      const storeIds = stores
+        .filter(function(store) {
+          return store.category_id === category.id;
+        })
+        .map(function(store) {
+          return store.id;
+        });
 
 
-      const categoryStoreIds =
-        stores
-          .filter(function(store) {
-            return store.categoryId === category.id;
-          })
-          .map(function(store) {
-            return store.id;
-          });
+      const storeCount = storeIds.length;
 
 
-      const couponCount =
-        coupons.filter(function(coupon) {
-          return categoryStoreIds.includes(coupon.storeId);
-        }).length;
+      const couponCount = coupons.filter(function(coupon) {
+        return storeIds.includes(coupon.store_id);
+      }).length;
 
 
       const statusClass =
@@ -720,7 +668,6 @@ const DB = {
         <tr>
 
           <td>
-
             <span class="category-icon-small">
               ${escapeHTML(category.icon || "📁")}
             </span>
@@ -728,7 +675,6 @@ const DB = {
             <span class="category-name">
               ${escapeHTML(category.name)}
             </span>
-
           </td>
 
           <td>
@@ -744,11 +690,9 @@ const DB = {
           </td>
 
           <td>
-
             <span class="badge ${statusClass}">
               ${escapeHTML(category.status || "active")}
             </span>
-
           </td>
 
           <td>
@@ -778,13 +722,8 @@ const DB = {
       `;
 
     }).join("");
-
   }
 
-
-  /* =========================
-     OPEN MODAL
-  ========================= */
 
   function openCategoryModal(id) {
 
@@ -794,12 +733,9 @@ const DB = {
     const form =
       document.getElementById("categoryForm");
 
-
     form.reset();
 
-
     document.getElementById("categoryId").value = "";
-
 
     document.getElementById("modalTitle").textContent =
       id ? "Edit Category" : "Add Category";
@@ -807,58 +743,57 @@ const DB = {
 
     if (id) {
 
-      const category =
-        getCategories().find(function(item) {
-          return item.id === id;
-        });
+      loadCategoryForEdit(id);
+
+    } else {
+
+      modal.classList.add("show");
+
+    }
+  }
 
 
-      if (!category) {
+  async function loadCategoryForEdit(id) {
 
-        alert("Category not found.");
+    const categories = await getCategories();
 
-        return;
+    const category =
+      categories.find(function(item) {
+        return item.id === id;
+      });
 
-      }
 
-
-      document.getElementById("categoryId").value =
-        category.id;
-
-      document.getElementById("categoryName").value =
-        category.name || "";
-
-      document.getElementById("categorySlug").value =
-        category.slug || "";
-
-      document.getElementById("categoryIcon").value =
-        category.icon || "";
-
-      document.getElementById("categoryStatus").value =
-        category.status || "active";
-
+    if (!category) {
+      alert("Category not found.");
+      return;
     }
 
 
-    modal.classList.add("show");
+    document.getElementById("categoryId").value =
+      category.id;
 
+    document.getElementById("categoryName").value =
+      category.name || "";
+
+    document.getElementById("categorySlug").value =
+      category.slug || "";
+
+    document.getElementById("categoryIcon").value =
+      category.icon || "";
+
+    document.getElementById("categoryStatus").value =
+      category.status || "active";
+
+
+    document.getElementById("categoryModal")
+      .classList.add("show");
   }
 
-
-  /* =========================
-     EDIT
-  ========================= */
 
   function editCategory(id) {
-
     openCategoryModal(id);
-
   }
 
-
-  /* =========================
-     CLOSE MODAL
-  ========================= */
 
   function closeCategoryModal() {
 
@@ -869,13 +804,9 @@ const DB = {
   }
 
 
-  /* =========================
-     SAVE CATEGORY
-  ========================= */
-
   document
     .getElementById("categoryForm")
-    .addEventListener("submit", function(event) {
+    .addEventListener("submit", async function(event) {
 
       event.preventDefault();
 
@@ -914,123 +845,72 @@ const DB = {
           .value;
 
 
-      /* NAME REQUIRED */
-
       if (!name) {
-
         alert("Please enter category name.");
-
         return;
-
       }
 
 
-      /* AUTO SLUG */
-
       if (!slug) {
-
         slug = generateSlug(name);
-
       } else {
-
         slug = generateSlug(slug);
-
       }
 
 
       if (!slug) {
-
         alert("Please enter a valid category name.");
-
         return;
-
       }
 
 
-      let categories = getCategories();
+      const { data: existing } = await supabase
+        .from("categories")
+        .select("id")
+        .eq("slug", slug)
+        .neq("id", id || "___new___")
+        .maybeSingle();
 
 
-      /* DUPLICATE SLUG CHECK */
-
-      const duplicate =
-        categories.find(function(category) {
-
-          return (
-            category.slug === slug &&
-            category.id !== id
-          );
-
-        });
-
-
-      if (duplicate) {
-
+      if (existing) {
         alert(
           "This category slug already exists. Please use another slug."
         );
-
         return;
-
       }
 
 
-      /* CATEGORY OBJECT */
-
       const category = {
-
         id: id || "cat_" + Date.now(),
-
         name: name,
-
         slug: slug,
-
         icon: icon || "📁",
-
         status: status || "active"
-
       };
 
 
-      /* UPDATE OR ADD */
-
-      const existingIndex =
-        categories.findIndex(function(item) {
-
-          return item.id === category.id;
-
-        });
+      const { error } = await supabase
+        .from("categories")
+        .upsert(category);
 
 
-      if (existingIndex >= 0) {
+      if (error) {
 
-        categories[existingIndex] = category;
+        console.error(error);
 
-      } else {
+        alert(error.message);
 
-        categories.push(category);
-
+        return;
       }
 
 
-      /* SAVE TO LOCAL STORAGE */
-
-      DB.saveCategories(categories);
-
-
-      /* CLOSE */
-
       closeCategoryModal();
 
+      await renderCategories();
 
-      /* REFRESH TABLE */
-
-      renderCategories();
-
-
-      /* SUCCESS */
 
       alert(
-        existingIndex >= 0
+        id
           ? "Category updated successfully!"
           : "Category added successfully!"
       );
@@ -1038,13 +918,9 @@ const DB = {
     });
 
 
-  /* =========================
-     DELETE CATEGORY
-  ========================= */
+  async function deleteCategory(id) {
 
-  function deleteCategory(id) {
-
-    const categories = getCategories();
+    const categories = await getCategories();
 
     const category =
       categories.find(function(item) {
@@ -1053,21 +929,18 @@ const DB = {
 
 
     if (!category) {
-
       alert("Category not found.");
-
       return;
-
     }
 
 
-    const stores =
-      DB.stores().filter(function(store) {
-        return store.categoryId === id;
-      });
+    const { data: stores } = await supabase
+      .from("stores")
+      .select("id")
+      .eq("category_id", id);
 
 
-    if (stores.length > 0) {
+    if (stores && stores.length > 0) {
 
       alert(
         "You cannot delete this category because " +
@@ -1076,7 +949,6 @@ const DB = {
       );
 
       return;
-
     }
 
 
@@ -1089,56 +961,47 @@ const DB = {
 
 
     if (!confirmed) {
-
       return;
-
     }
 
 
-    const updatedCategories =
-      categories.filter(function(item) {
-
-        return item.id !== id;
-
-      });
+    const { error } = await supabase
+      .from("categories")
+      .delete()
+      .eq("id", id);
 
 
-    DB.saveCategories(updatedCategories);
+    if (error) {
+
+      console.error(error);
+
+      alert(error.message);
+
+      return;
+    }
 
 
-    renderCategories();
-
+    await renderCategories();
 
     alert("Category deleted successfully!");
 
   }
 
 
-  /* =========================
-     CLOSE WHEN CLICK OUTSIDE
-  ========================= */
-
   document
     .getElementById("categoryModal")
     .addEventListener("click", function(event) {
 
       if (event.target === this) {
-
         closeCategoryModal();
-
       }
 
     });
 
 
-  /* =========================
-     INITIAL LOAD
-  ========================= */
-
   renderCategories();
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../js/supabase.js"></script>
+
 </body>
 </html>
