@@ -1,1031 +1,1101 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories - Admin</title>
 
-    <title>Categories - DealHub Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
 
-    <link rel="stylesheet" href="../css/admin.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #111827;
+      color: white;
+      padding: 25px 15px;
+      flex-shrink: 0;
+    }
+
+    .admin-brand {
+      font-size: 24px;
+      font-weight: 700;
+      padding: 0 10px 30px;
+    }
+
+    .sidebar nav a {
+      display: block;
+      color: #d1d5db;
+      text-decoration: none;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 5px;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background: #2563eb;
+      color: white;
+    }
+
+    .admin-main {
+      flex: 1;
+      padding: 30px;
+      min-width: 0;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      gap: 15px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .muted {
+      color: #6b7280;
+    }
+
+    .btn-primary {
+      border: 0;
+      background: #2563eb;
+      color: white;
+      padding: 11px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #edf0f5;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      font-size: 13px;
+      color: #6b7280;
+      background: #f9fafb;
+    }
+
+    .category-name {
+      font-weight: 600;
+    }
+
+    .category-icon-small {
+      font-size: 24px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .active-badge {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .inactive-badge {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .actions button {
+      border: 1px solid #d1d5db;
+      background: white;
+      padding: 7px 11px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .actions button:hover {
+      background: #f3f4f6;
+    }
+
+    .actions .danger {
+      color: #dc2626;
+      border-color: #fecaca;
+    }
+
+    .actions .danger:hover {
+      background: #fef2f2;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 45px 20px;
+      color: #6b7280;
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    /* Modal */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 9999;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 520px;
+      background: white;
+      border-radius: 14px;
+      padding: 25px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.2);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .close-btn {
+      border: 0;
+      background: transparent;
+      font-size: 25px;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .form-control:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    }
+
+    .field-help {
+      display: block;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .btn-secondary {
+      border: 1px solid #d1d5db;
+      background: white;
+      color: #374151;
+      padding: 10px 17px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: #f3f4f6;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 190px;
+      }
+
+      .admin-main {
+        padding: 20px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .admin-layout {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+      }
+
+      .sidebar nav {
+        display: flex;
+        overflow-x: auto;
+        gap: 5px;
+      }
+
+      .sidebar nav a {
+        white-space: nowrap;
+      }
+
+      .admin-main {
+        padding: 15px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-    <div class="admin-layout">
+<div class="admin-layout">
 
-        <!-- ================= SIDEBAR ================= -->
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
 
-        <aside class="sidebar">
+    <div class="admin-brand">
+      DealHub
+    </div>
 
-            <a href="dashboard.html" class="admin-brand">
-                Deal<span>Hub</span>
-                <small>ADMIN PANEL</small>
-            </a>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="stores.html">Stores</a>
+      <a href="coupons.html">Coupons</a>
+      <a href="categories.html" class="active">Categories</a>
+    </nav>
 
-
-            <nav>
-
-                <a href="dashboard.html">
-                    📊 Dashboard
-                </a>
-
-                <a href="stores.html">
-                    🏪 Stores
-                </a>
-
-                <a href="coupons.html">
-                    🎟️ Coupons
-                </a>
-
-                <a href="categories.html" class="active">
-                    🏷️ Categories
-                </a>
-
-            </nav>
+  </aside>
 
 
-            <a href="../index.html" class="back">
-                ← View Website
-            </a>
+  <!-- MAIN -->
+  <main class="admin-main">
 
-        </aside>
+    <div class="topbar">
 
+      <div>
+        <h1>Categories</h1>
+        <p class="muted">Manage your website categories</p>
+      </div>
 
-        <!-- ================= MAIN CONTENT ================= -->
-
-        <main class="admin-main">
-
-            <!-- TOP BAR -->
-
-            <div class="topbar">
-
-                <div>
-
-                    <p class="eyebrow">
-                        MANAGEMENT
-                    </p>
-
-                    <h1>
-                        Categories
-                    </h1>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    class="btn-primary"
-                    onclick="openCategoryModal()">
-
-                    + Add Category
-
-                </button>
-
-            </div>
-
-
-            <!-- ================= CATEGORY TABLE ================= -->
-
-            <div class="panel">
-
-                <div class="panel-head">
-
-                    <div>
-
-                        <h2>
-                            All Categories
-                        </h2>
-
-                        <p class="muted">
-                            Manage your website categories.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="table-wrap">
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    Category
-                                </th>
-
-                                <th>
-                                    Slug
-                                </th>
-
-                                <th>
-                                    Stores
-                                </th>
-
-                                <th>
-                                    Coupons
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
-
-                                <th>
-                                    Actions
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="categoryTable">
-
-                            <!-- Categories will be loaded here -->
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </main>
+      <button
+        type="button"
+        class="btn-primary"
+        onclick="openCategoryModal()"
+      >
+        + Add Category
+      </button>
 
     </div>
 
 
+    <div class="panel">
 
-    <!-- ================= ADD / EDIT MODAL ================= -->
-
-    <div
-        id="categoryModal"
-        class="modal">
-
-        <div class="modal-box">
-
-            <!-- Modal Header -->
-
-            <div class="modal-head">
-
-                <div>
-
-                    <p class="eyebrow">
-                        CATEGORY
-                    </p>
-
-                    <h2 id="modalTitle">
-                        Add Category
-                    </h2>
-
-                </div>
+      <div class="panel-head">
+        <h2>All Categories</h2>
+        <span id="categoryCount" class="muted"></span>
+      </div>
 
 
-                <button
-                    type="button"
-                    onclick="closeCategoryModal()">
+      <div class="table-wrap">
 
-                    ×
+        <table>
 
-                </button>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Slug</th>
+              <th>Stores</th>
+              <th>Coupons</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
 
-            </div>
+          <tbody id="categoriesTable">
+          </tbody>
 
+        </table>
 
+      </div>
 
-            <!-- Category Form -->
+    </div>
 
-            <form id="categoryForm">
+  </main>
 
-                <!-- Hidden ID -->
-
-                <input
-                    type="hidden"
-                    id="categoryId">
-
-
-                <!-- Name -->
-
-                <label>
-
-                    Category Name
-
-                    <input
-                        type="text"
-                        id="categoryName"
-                        class="form-control"
-                        placeholder="e.g. Fashion"
-                        required>
-
-                </label>
+</div>
 
 
-                <!-- Slug -->
+<!-- ADD / EDIT MODAL -->
 
-                <label>
+<div class="modal" id="categoryModal">
 
-                    Slug
+  <div class="modal-box">
 
-                    <input
-                        type="text"
-                        id="categorySlug"
-                        class="form-control"
-                        placeholder="fashion">
+    <div class="modal-head">
 
-                    <small class="field-help">
-                        Leave empty to generate automatically.
-                    </small>
+      <h2 id="modalTitle">Add Category</h2>
 
-                </label>
-
-
-                <!-- Icon -->
-
-                <label>
-
-                    Icon / Emoji
-
-                    <input
-                        type="text"
-                        id="categoryIcon"
-                        class="form-control"
-                        placeholder="👕">
-
-                </label>
-
-
-                <!-- Status -->
-
-                <label>
-
-                    Status
-
-                    <select
-                        id="categoryStatus"
-                        class="form-control">
-
-                        <option value="active">
-                            Active
-                        </option>
-
-                        <option value="inactive">
-                            Inactive
-                        </option>
-
-                    </select>
-
-                </label>
-
-
-                <!-- Buttons -->
-
-                <div class="form-actions">
-
-                    <button
-                        type="button"
-                        class="btn-secondary"
-                        onclick="closeCategoryModal()">
-
-                        Cancel
-
-                    </button>
-
-
-                    <button
-                        type="submit"
-                        class="btn-primary">
-
-                        Save Category
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
+      <button
+        type="button"
+        class="close-btn"
+        onclick="closeCategoryModal()"
+      >
+        &times;
+      </button>
 
     </div>
 
 
+    <form id="categoryForm">
 
-    <!-- ================= JAVASCRIPT ================= -->
+      <input
+        type="hidden"
+        id="categoryId"
+      >
 
-    <!-- LocalStorage Database -->
 
-    <script src="../js/storage.js"></script>
+      <div class="form-group">
 
+        <label for="categoryName">
+          Category Name
+        </label>
 
-    <script>
+        <input
+          type="text"
+          id="categoryName"
+          class="form-control"
+          placeholder="e.g. Fashion"
+          required
+        >
 
-        /*
-        =====================================================
-        CATEGORY MANAGEMENT
-        =====================================================
-        */
+      </div>
 
 
-        const categoryTable =
-            document.getElementById("categoryTable");
+      <div class="form-group">
 
-        const categoryModal =
-            document.getElementById("categoryModal");
+        <label for="categorySlug">
+          Slug
+        </label>
 
-        const categoryForm =
-            document.getElementById("categoryForm");
+        <input
+          type="text"
+          id="categorySlug"
+          class="form-control"
+          placeholder="e.g. fashion"
+        >
 
+        <span class="field-help">
+          Leave empty to generate automatically.
+        </span>
 
-        /*
-        =====================================================
-        ESCAPE HTML
-        =====================================================
-        */
+      </div>
 
-        function escapeHTML(value) {
 
-            return String(value ?? "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+      <div class="form-group">
 
-        }
+        <label for="categoryIcon">
+          Icon / Emoji
+        </label>
 
+        <input
+          type="text"
+          id="categoryIcon"
+          class="form-control"
+          placeholder="👕"
+        >
 
-        /*
-        =====================================================
-        GET CATEGORY DATA
-        =====================================================
-        */
+      </div>
 
-        function getCategories() {
 
-            return DB.categories();
+      <div class="form-group">
 
-        }
+        <label for="categoryStatus">
+          Status
+        </label>
 
+        <select
+          id="categoryStatus"
+          class="form-control"
+        >
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
 
-        /*
-        =====================================================
-        SAVE CATEGORY DATA
-        =====================================================
-        */
+      </div>
 
-        function saveCategories(categories) {
 
-            DB.saveCategories(categories);
+      <div class="form-actions">
 
-        }
+        <button
+          type="button"
+          class="btn-secondary"
+          onclick="closeCategoryModal()"
+        >
+          Cancel
+        </button>
 
+        <button
+          type="submit"
+          class="btn-primary"
+        >
+          Save Category
+        </button>
 
-        /*
-        =====================================================
-        GENERATE SLUG
-        =====================================================
-        */
+      </div>
 
-        function generateSlug(name) {
+    </form>
 
-            return name
-                .toLowerCase()
-                .trim()
-                .replace(/[^a-z0-9]+/g, "-")
-                .replace(/^-+|-+$/g, "");
+  </div>
 
-        }
+</div>
 
 
-        /*
-        =====================================================
-        RENDER CATEGORY TABLE
-        =====================================================
-        */
+<!-- DATABASE -->
 
-        function renderCategories() {
+<script src="../js/storage.js"></script>
 
-            const categories =
-                getCategories();
 
-            const stores =
-                DB.stores();
+<!-- CATEGORY SCRIPT -->
 
-            const coupons =
-                DB.coupons();
+<script>
 
+  /* =========================
+     ESCAPE HTML
+  ========================= */
 
-            if (!categories.length) {
+  function escapeHTML(value) {
 
-                categoryTable.innerHTML = `
-                    <tr>
-                        <td colspan="6">
+    return String(value ?? "").replace(
+      /[&<>"']/g,
+      function (char) {
 
-                            <div class="empty-state">
+        const map = {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        };
 
-                                <div class="empty-icon">
-                                    🏷️
-                                </div>
+        return map[char];
 
-                                <h3>
-                                    No Categories Found
-                                </h3>
+      }
+    );
 
-                                <p>
-                                    Add your first category
-                                    to get started.
-                                </p>
+  }
 
-                                <button
-                                    class="btn-primary"
-                                    onclick="openCategoryModal()">
 
-                                    + Add Category
+  /* =========================
+     GET CATEGORIES
+  ========================= */
 
-                                </button>
+  function getCategories() {
 
-                            </div>
+    return DB.categories();
 
-                        </td>
-                    </tr>
-                `;
+  }
 
-                return;
-            }
 
+  /* =========================
+     GENERATE SLUG
+  ========================= */
 
-            categoryTable.innerHTML =
-                categories.map(category => {
+  function generateSlug(text) {
 
-                    /*
-                    Count stores belonging
-                    to this category.
-                    */
+    return String(text || "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
 
-                    const storeCount =
-                        stores.filter(
-                            store =>
-                                store.categoryId === category.id
-                        ).length;
+  }
 
 
-                    /*
-                    Find stores in category,
-                    then count their coupons.
-                    */
+  /* =========================
+     RENDER CATEGORIES
+  ========================= */
 
-                    const categoryStoreIds =
-                        stores
-                            .filter(
-                                store =>
-                                    store.categoryId === category.id
-                            )
-                            .map(store => store.id);
+  function renderCategories() {
 
+    const table =
+      document.getElementById("categoriesTable");
 
-                    const couponCount =
-                        coupons.filter(
-                            coupon =>
-                                categoryStoreIds.includes(
-                                    coupon.storeId
-                                )
-                        ).length;
+    const count =
+      document.getElementById("categoryCount");
 
+    const categories = getCategories();
 
-                    const statusClass =
-                        category.status === "active"
-                            ? "active-badge"
-                            : "inactive-badge";
+    const stores = DB.stores();
 
+    const coupons = DB.coupons();
 
-                    return `
 
-                        <tr>
+    count.textContent =
+      categories.length +
+      (categories.length === 1 ? " category" : " categories");
 
-                            <!-- Category -->
 
-                            <td>
+    if (!categories.length) {
 
-                                <div class="category-name">
+      table.innerHTML = `
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <div class="empty-icon">📂</div>
+              <div>No categories found.</div>
+            </div>
+          </td>
+        </tr>
+      `;
 
-                                    <span class="category-icon-small">
+      return;
 
-                                        ${escapeHTML(
-                                            category.icon || "🏷️"
-                                        )}
+    }
 
-                                    </span>
 
-                                    <strong>
+    table.innerHTML = categories.map(function(category) {
 
-                                        ${escapeHTML(
-                                            category.name
-                                        )}
+      const storeCount =
+        stores.filter(function(store) {
+          return store.categoryId === category.id;
+        }).length;
 
-                                    </strong>
 
-                                </div>
+      const categoryStoreIds =
+        stores
+          .filter(function(store) {
+            return store.categoryId === category.id;
+          })
+          .map(function(store) {
+            return store.id;
+          });
 
-                            </td>
 
+      const couponCount =
+        coupons.filter(function(coupon) {
+          return categoryStoreIds.includes(coupon.storeId);
+        }).length;
 
-                            <!-- Slug -->
 
-                            <td>
+      const statusClass =
+        category.status === "active"
+          ? "active-badge"
+          : "inactive-badge";
 
-                                <code>
 
-                                    ${escapeHTML(
-                                        category.slug
-                                    )}
+      return `
+        <tr>
 
-                                </code>
+          <td>
 
-                            </td>
+            <span class="category-icon-small">
+              ${escapeHTML(category.icon || "📁")}
+            </span>
 
+            <span class="category-name">
+              ${escapeHTML(category.name)}
+            </span>
 
-                            <!-- Stores -->
+          </td>
 
-                            <td>
+          <td>
+            ${escapeHTML(category.slug)}
+          </td>
 
-                                ${storeCount}
+          <td>
+            ${storeCount}
+          </td>
 
-                            </td>
+          <td>
+            ${couponCount}
+          </td>
 
+          <td>
 
-                            <!-- Coupons -->
+            <span class="badge ${statusClass}">
+              ${escapeHTML(category.status || "active")}
+            </span>
 
-                            <td>
+          </td>
 
-                                ${couponCount}
+          <td>
 
-                            </td>
+            <div class="actions">
 
+              <button
+                type="button"
+                onclick="editCategory('${escapeHTML(category.id)}')"
+              >
+                Edit
+              </button>
 
-                            <!-- Status -->
+              <button
+                type="button"
+                class="danger"
+                onclick="deleteCategory('${escapeHTML(category.id)}')"
+              >
+                Delete
+              </button>
 
-                            <td>
+            </div>
 
-                                <span
-                                    class="badge ${statusClass}">
+          </td>
 
-                                    ${escapeHTML(
-                                        category.status
-                                    )}
+        </tr>
+      `;
 
-                                </span>
+    }).join("");
 
-                            </td>
+  }
 
 
-                            <!-- Actions -->
+  /* =========================
+     OPEN MODAL
+  ========================= */
 
-                            <td class="actions">
+  function openCategoryModal(id) {
 
-                                <button
-                                    type="button"
-                                    onclick="editCategory('${category.id}')">
+    const modal =
+      document.getElementById("categoryModal");
 
-                                    Edit
+    const form =
+      document.getElementById("categoryForm");
 
-                                </button>
 
+    form.reset();
 
-                                <button
-                                    type="button"
-                                    class="danger"
-                                    onclick="deleteCategory('${category.id}')">
 
-                                    Delete
+    document.getElementById("categoryId").value = "";
 
-                                </button>
 
-                            </td>
+    document.getElementById("modalTitle").textContent =
+      id ? "Edit Category" : "Add Category";
 
-                        </tr>
 
-                    `;
+    if (id) {
 
-                }).join("");
+      const category =
+        getCategories().find(function(item) {
+          return item.id === id;
+        });
 
-        }
 
+      if (!category) {
 
-        /*
-        =====================================================
-        OPEN ADD MODAL
-        =====================================================
-        */
+        alert("Category not found.");
 
-        function openCategoryModal() {
+        return;
 
-            categoryForm.reset();
+      }
 
 
-            document.getElementById(
-                "categoryId"
-            ).value = "";
+      document.getElementById("categoryId").value =
+        category.id;
 
+      document.getElementById("categoryName").value =
+        category.name || "";
 
-            document.getElementById(
-                "modalTitle"
-            ).textContent =
-                "Add Category";
+      document.getElementById("categorySlug").value =
+        category.slug || "";
 
+      document.getElementById("categoryIcon").value =
+        category.icon || "";
 
-            document.getElementById(
-                "categoryIcon"
-            ).value = "🏷️";
+      document.getElementById("categoryStatus").value =
+        category.status || "active";
 
+    }
 
-            document.getElementById(
-                "categoryStatus"
-            ).value = "active";
 
+    modal.classList.add("show");
 
-            categoryModal.classList.add("show");
+  }
 
-        }
 
+  /* =========================
+     EDIT
+  ========================= */
 
-        /*
-        =====================================================
-        OPEN EDIT MODAL
-        =====================================================
-        */
+  function editCategory(id) {
 
-        function editCategory(id) {
+    openCategoryModal(id);
 
-            const categories =
-                getCategories();
+  }
 
 
-            const category =
-                categories.find(
-                    item => item.id === id
-                );
+  /* =========================
+     CLOSE MODAL
+  ========================= */
 
+  function closeCategoryModal() {
 
-            if (!category) {
+    document
+      .getElementById("categoryModal")
+      .classList.remove("show");
 
-                alert("Category not found.");
+  }
 
-                return;
 
-            }
+  /* =========================
+     SAVE CATEGORY
+  ========================= */
 
+  document
+    .getElementById("categoryForm")
+    .addEventListener("submit", function(event) {
 
-            document.getElementById(
-                "categoryId"
-            ).value =
-                category.id;
+      event.preventDefault();
 
 
-            document.getElementById(
-                "categoryName"
-            ).value =
-                category.name || "";
+      const id =
+        document
+          .getElementById("categoryId")
+          .value
+          .trim();
 
 
-            document.getElementById(
-                "categorySlug"
-            ).value =
-                category.slug || "";
+      const name =
+        document
+          .getElementById("categoryName")
+          .value
+          .trim();
 
 
-            document.getElementById(
-                "categoryIcon"
-            ).value =
-                category.icon || "🏷️";
+      let slug =
+        document
+          .getElementById("categorySlug")
+          .value
+          .trim();
 
 
-            document.getElementById(
-                "categoryStatus"
-            ).value =
-                category.status || "active";
+      const icon =
+        document
+          .getElementById("categoryIcon")
+          .value
+          .trim();
 
 
-            document.getElementById(
-                "modalTitle"
-            ).textContent =
-                "Edit Category";
+      const status =
+        document
+          .getElementById("categoryStatus")
+          .value;
 
 
-            categoryModal.classList.add("show");
+      /* NAME REQUIRED */
 
-        }
+      if (!name) {
 
+        alert("Please enter category name.");
 
-        /*
-        =====================================================
-        CLOSE MODAL
-        =====================================================
-        */
+        return;
 
-        function closeCategoryModal() {
+      }
 
-            categoryModal.classList.remove("show");
 
-        }
+      /* AUTO SLUG */
 
+      if (!slug) {
 
-        /*
-        =====================================================
-        CLOSE MODAL WHEN CLICKING OUTSIDE
-        =====================================================
-        */
+        slug = generateSlug(name);
 
-        categoryModal.addEventListener(
-            "click",
-            function(event) {
+      } else {
 
-                if (
-                    event.target === categoryModal
-                ) {
+        slug = generateSlug(slug);
 
-                    closeCategoryModal();
+      }
 
-                }
 
-            }
+      if (!slug) {
+
+        alert("Please enter a valid category name.");
+
+        return;
+
+      }
+
+
+      let categories = getCategories();
+
+
+      /* DUPLICATE SLUG CHECK */
+
+      const duplicate =
+        categories.find(function(category) {
+
+          return (
+            category.slug === slug &&
+            category.id !== id
+          );
+
+        });
+
+
+      if (duplicate) {
+
+        alert(
+          "This category slug already exists. Please use another slug."
         );
 
+        return;
 
-        /*
-        =====================================================
-        SAVE CATEGORY
-        =====================================================
-        */
+      }
 
-        categoryForm.addEventListener(
-            "submit",
-            function(event) {
 
-                event.preventDefault();
+      /* CATEGORY OBJECT */
 
+      const category = {
 
-                const id =
-                    document.getElementById(
-                        "categoryId"
-                    ).value;
+        id: id || "cat_" + Date.now(),
 
+        name: name,
 
-                const name =
-                    document.getElementById(
-                        "categoryName"
-                    ).value.trim();
+        slug: slug,
 
+        icon: icon || "📁",
 
-                let slug =
-                    document.getElementById(
-                        "categorySlug"
-                    ).value.trim();
+        status: status || "active"
 
+      };
 
-                const icon =
-                    document.getElementById(
-                        "categoryIcon"
-                    ).value.trim() ||
-                    "🏷️";
 
+      /* UPDATE OR ADD */
 
-                const status =
-                    document.getElementById(
-                        "categoryStatus"
-                    ).value;
+      const existingIndex =
+        categories.findIndex(function(item) {
 
+          return item.id === category.id;
 
-                /*
-                Generate slug automatically
-                if user leaves it empty.
-                */
+        });
 
-                if (!slug) {
 
-                    slug =
-                        generateSlug(name);
+      if (existingIndex >= 0) {
 
-                }
+        categories[existingIndex] = category;
 
+      } else {
 
-                if (!name) {
+        categories.push(category);
 
-                    alert(
-                        "Please enter category name."
-                    );
+      }
 
-                    return;
 
-                }
+      /* SAVE TO LOCAL STORAGE */
 
+      DB.saveCategories(categories);
 
-                let categories =
-                    getCategories();
 
+      /* CLOSE */
 
-                /*
-                Check duplicate slug
-                */
+      closeCategoryModal();
 
-                const duplicate =
-                    categories.find(
-                        category =>
-                            category.slug === slug &&
-                            category.id !== id
-                    );
 
+      /* REFRESH TABLE */
 
-                if (duplicate) {
+      renderCategories();
 
-                    alert(
-                        "This category slug already exists."
-                    );
 
-                    return;
+      /* SUCCESS */
 
-                }
+      alert(
+        existingIndex >= 0
+          ? "Category updated successfully!"
+          : "Category added successfully!"
+      );
 
+    });
 
-                /*
-                EDIT EXISTING
-                */
 
-                if (id) {
+  /* =========================
+     DELETE CATEGORY
+  ========================= */
 
-                    const index =
-                        categories.findIndex(
-                            category =>
-                                category.id === id
-                        );
+  function deleteCategory(id) {
 
+    const categories = getCategories();
 
-                    if (index !== -1) {
+    const category =
+      categories.find(function(item) {
+        return item.id === id;
+      });
 
-                        categories[index] = {
 
-                            ...categories[index],
+    if (!category) {
 
-                            name: name,
+      alert("Category not found.");
 
-                            slug: slug,
+      return;
 
-                            icon: icon,
+    }
 
-                            status: status
 
-                        };
+    const stores =
+      DB.stores().filter(function(store) {
+        return store.categoryId === id;
+      });
 
-                    }
 
-                }
+    if (stores.length > 0) {
 
+      alert(
+        "You cannot delete this category because " +
+        stores.length +
+        " store(s) are using it. Please change or delete those stores first."
+      );
 
-                /*
-                ADD NEW
-                */
+      return;
 
-                else {
+    }
 
-                    categories.push({
 
-                        id:
-                            "cat_" +
-                            Date.now(),
+    const confirmed =
+      confirm(
+        'Delete category "' +
+        category.name +
+        '"?'
+      );
 
-                        name:
-                            name,
 
-                        slug:
-                            slug,
+    if (!confirmed) {
 
-                        icon:
-                            icon,
+      return;
 
-                        status:
-                            status
+    }
 
-                    });
 
-                }
+    const updatedCategories =
+      categories.filter(function(item) {
 
+        return item.id !== id;
 
-                /*
-                Save to LocalStorage
-                */
+      });
 
-                saveCategories(
-                    categories
-                );
 
+    DB.saveCategories(updatedCategories);
 
-                /*
-                Close modal
-                */
 
-                closeCategoryModal();
+    renderCategories();
 
 
-                /*
-                Refresh table
-                */
+    alert("Category deleted successfully!");
 
-                renderCategories();
+  }
 
-            }
-        );
 
+  /* =========================
+     CLOSE WHEN CLICK OUTSIDE
+  ========================= */
 
-        /*
-        =====================================================
-        DELETE CATEGORY
-        =====================================================
-        */
+  document
+    .getElementById("categoryModal")
+    .addEventListener("click", function(event) {
 
-        function deleteCategory(id) {
+      if (event.target === this) {
 
-            const categories =
-                getCategories();
+        closeCategoryModal();
 
+      }
 
-            const category =
-                categories.find(
-                    item => item.id === id
-                );
+    });
 
 
-            if (!category) {
+  /* =========================
+     INITIAL LOAD
+  ========================= */
 
-                return;
+  renderCategories();
 
-            }
-
-
-            /*
-            Check whether category
-            is currently used by stores.
-            */
-
-            const usedByStore =
-                DB.stores().some(
-                    store =>
-                        store.categoryId === id
-                );
-
-
-            if (usedByStore) {
-
-                alert(
-                    "This category is currently used by one or more stores. Please change those stores to another category before deleting it."
-                );
-
-                return;
-
-            }
-
-
-            const confirmed =
-                confirm(
-                    `Delete "${category.name}" category?`
-                );
-
-
-            if (!confirmed) {
-
-                return;
-
-            }
-
-
-            const updatedCategories =
-                categories.filter(
-                    item =>
-                        item.id !== id
-                );
-
-
-            saveCategories(
-                updatedCategories
-            );
-
-
-            renderCategories();
-
-        }
-
-
-        /*
-        =====================================================
-        INITIAL LOAD
-        =====================================================
-        */
-
-        renderCategories();
-
-    </script>
+</script>
 
 </body>
 </html>
