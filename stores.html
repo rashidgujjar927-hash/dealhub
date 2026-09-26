@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>DealHub - Stores</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f6f7fb;
+      color: #222;
+    }
+
+    /* NAVBAR */
+    nav {
+      height: 70px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8%;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 27px;
+      font-weight: bold;
+      color: #5b4de8;
+    }
+
+    .menu {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .menu a:hover {
+      color: #5b4de8;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #5b4de8, #8b5cf6);
+      color: white;
+      text-align: center;
+      padding: 70px 20px;
+    }
+
+    .hero h1 {
+      font-size: 45px;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      margin-bottom: 28px;
+    }
+
+    .search {
+      width: 100%;
+      max-width: 600px;
+      height: 55px;
+      padding: 0 20px;
+      border: none;
+      border-radius: 30px;
+      outline: none;
+      font-size: 16px;
+    }
+
+    /* MAIN */
+    .container {
+      width: 84%;
+      max-width: 1200px;
+      margin: 50px auto;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 35px;
+    }
+
+    /* FILTERS */
+    .filters {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+
+    .filter-btn {
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      background: white;
+      color: #444;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,.06);
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: #5b4de8;
+      color: white;
+    }
+
+    /* STORE GRID */
+    .stores {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+    }
+
+    .store-card {
+      background: white;
+      padding: 28px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,.07);
+      transition: .3s;
+    }
+
+    .store-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .store-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #eeeafe;
+      border-radius: 15px;
+      font-size: 42px;
+    }
+
+    .store-card h3 {
+      font-size: 21px;
+      margin-bottom: 8px;
+    }
+
+    .category {
+      color: #5b4de8;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .store-card p {
+      color: #777;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      background: #5b4de8;
+      color: white;
+      padding: 11px 20px;
+      border-radius: 7px;
+    }
+
+    .btn:hover {
+      background: #493bd0;
+    }
+
+    /* NO RESULT */
+    #noResult {
+      display: none;
+      text-align: center;
+      color: #777;
+      padding: 40px;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #18181b;
+      color: white;
+      margin-top: 70px;
+      padding: 40px 8%;
+      text-align: center;
+    }
+
+    footer .logo {
+      margin-bottom: 10px;
+    }
+
+    footer p {
+      color: #aaa;
+    }
+
+    /* MOBILE */
+    @media(max-width: 800px) {
+
+      nav {
+        padding: 0 20px;
+      }
+
+      .menu {
+        gap: 12px;
+      }
+
+      .menu a {
+        font-size: 13px;
+      }
+
+      .hero h1 {
+        font-size: 35px;
+      }
+
+      .stores {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .container {
+        width: 92%;
+      }
+    }
+
+    @media(max-width: 550px) {
+
+      .stores {
+        grid-template-columns: 1fr;
+      }
+
+      .menu {
+        gap: 8px;
+      }
+
+      .menu a {
+        font-size: 11px;
+      }
+
+      .logo {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<nav>
+
+  <div class="logo">
+    DealHub
+  </div>
+
+  <ul class="menu">
+
+    <li>
+      <a href="index.html">Home</a>
+    </li>
+
+    <li>
+      <a href="stores.html">Stores</a>
+    </li>
+
+    <li>
+      <a href="coupons.html">Coupons</a>
+    </li>
+
+    <li>
+      <a href="categories.html">Categories</a>
+    </li>
+
+  </ul>
+
+</nav>
+
+
+<!-- ================= HERO ================= -->
+
+<div class="hero">
+
+  <h1>All Stores</h1>
+
+  <p>
+    Find your favorite stores and discover
+    amazing deals.
+  </p>
+
+  <input
+    type="text"
+    id="search"
+    class="search"
+    placeholder="Search store..."
+    onkeyup="searchStores()"
+  >
+
+</div>
+
+
+<!-- ================= STORE SECTION ================= -->
+
+<div class="container">
+
+  <h2 class="title">
+    Popular Stores
+  </h2>
+
+
+  <!-- FILTERS -->
+
+  <div class="filters">
+
+    <button
+      class="filter-btn active"
+      onclick="filterStores('all', this)">
+      All
+    </button>
+
+    <button
+      class="filter-btn"
+      onclick="filterStores('fashion', this)">
+      Fashion
+    </button>
+
+    <button
+      class="filter-btn"
+      onclick="filterStores('electronics', this)">
+      Electronics
+    </button>
+
+    <button
+      class="filter-btn"
+      onclick="filterStores('beauty', this)">
+      Beauty
+    </button>
+
+    <button
+      class="filter-btn"
+      onclick="filterStores('food', this)">
+      Food
+    </button>
+
+    <button
+      class="filter-btn"
+      onclick="filterStores('travel', this)">
+      Travel
+    </button>
+
+  </div>
+
+
+  <!-- STORES -->
+
+  <div class="stores" id="storeList">
+
+
+    <!-- AMAZON -->
+
+    <div
+      class="store-card"
+      data-category="electronics"
+      data-name="amazon">
+
+      <div class="store-logo">
+        🛒
+      </div>
+
+      <h3>Amazon</h3>
+
+      <div class="category">
+        Electronics
+      </div>
+
+      <p>
+        Shop electronics, gadgets and
+        thousands of other products.
+      </p>
+
+      <a
+        href="https://www.amazon.com"
+        target="_blank"
+        class="btn">
+        Visit Store
+      </a>
+
+    </div>
+
+
+    <!-- NIKE -->
+
+    <div
+      class="store-card"
+      data-category="fashion"
+      data-name="nike">
+
+      <div class="store-logo">
+        👟
+      </div>
+
+      <h3>Nike</h3>
+
+      <div class="category">
+        Fashion
+      </div>
+
+      <p>
+        Discover shoes, clothing and
+        sports products.
+      </p>
+
+      <a
+        href="#"
+        class="btn">
+        Visit Store
+      </a>
+
+    </div>
+
+
+    <!-- H&M -->
+
+    <div
+      class="store-card"
+      data-category="fashion"
+      data-name="h&m">
+
+      <div class="store-logo">
+        👕
+      </div>
+
+      <h3>H&M</h3>
+
+      <div class="category">
+        Fashion
+      </div>
+
+      <p>
+        Latest fashion and clothing
+        collections.
+      </p>
+
+      <a
+        href="#"
+        class="btn">
+        Visit Store
+      </a>
+
+    </div>
+
+
+    <!-- APPLE -->
+
+    <div
+      class="store-card"
+      data-category="electronics"
+      data-name="apple">
+
+      <div class="store-logo">
+        📱
+      </div>
+
+      <h3>Apple</h3>
+
+      <div class="category">
+        Electronics
+      </div>
+
+      <p>
+        Discover iPhone, Mac, iPad and
+        Apple accessories.
+      </p>
+
+      <a
+        href="#"
+        class="btn">
+        Visit Store
+      </a>
+
+    </div>
+
+
+    <!-- SEPHORA -->
+
+    <div
+      class="store-card"
+      data-category="beauty"
+      data-name="sephora">
+
+      <div class="store-logo">
+        💄
+      </div>
+
+      <h3>Sephora</h3>
+
+      <div class="category">
+        Beauty
+      </div>
+
+      <p>
+        Beauty, makeup, skincare and
+        fragrance products.
+      </p>
+
+      <a
+        href="#"
+        class="btn">
+        Visit Store
+      </a>
+
+    </div>
+
+
+    <!-- FOOD -->
+
+    <div
+      class="store-card"
+      data-category="food"
+      data-name="food store">
+
+      <div class="store-logo">
+        🍔
+      </div>
+
+      <h3>Food Store</h3>
+
+      <div class="category">
+        Food
+      </div>
+
+      <p>
+        Find food deals and restaurant
+        discounts.
+      </p>
+
+      <a
+        href="#"
+        class="btn">
+        Visit Store
+      </a>
+
+    </div>
+
+
+    <!-- TRAVEL -->
+
+    <div
+      class="store-card"
+      data-category="travel"
+      data-name="travel store">
+
+      <div class="store-logo">
+        ✈️
+      </div>
+
+      <h3>Travel Store</h3>
+
+      <div class="category">
+        Travel
+      </div>
+
+      <p>
+        Find hotels, flights and travel
+        deals.
+      </p>
+
+      <a
+        href="#"
+        class="btn">
+        Visit Store
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <div id="noResult">
+    <h3>No store found.</h3>
+    <p>Try another search or category.</p>
+  </div>
+
+</div>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+  <div class="logo">
+    DealHub
+  </div>
+
+  <p>
+    Find the best stores, deals and coupons.
+  </p>
+
+  <br>
+
+  <p>
+    © 2026 DealHub. All Rights Reserved.
+  </p>
+
+</footer>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+  /* SEARCH */
+
+  function searchStores() {
+
+    const search =
+      document
+      .getElementById("search")
+      .value
+      .toLowerCase()
+      .trim();
+
+    const cards =
+      document.querySelectorAll(".store-card");
+
+    let found = 0;
+
+    cards.forEach(function(card) {
+
+      const name =
+        card.dataset.name.toLowerCase();
+
+      const text =
+        card.textContent.toLowerCase();
+
+      if (
+        name.includes(search) ||
+        text.includes(search)
+      ) {
+
+        card.style.display = "block";
+        found++;
+
+      } else {
+
+        card.style.display = "none";
+
+      }
+
+    });
+
+    document.getElementById("noResult").style.display =
+      found === 0 ? "block" : "none";
+
+  }
+
+
+  /* CATEGORY FILTER */
+
+  function filterStores(category, button) {
+
+    const cards =
+      document.querySelectorAll(".store-card");
+
+    const buttons =
+      document.querySelectorAll(".filter-btn");
+
+    buttons.forEach(function(btn) {
+      btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    document.getElementById("search").value = "";
+
+    let found = 0;
+
+    cards.forEach(function(card) {
+
+      if (
+        category === "all" ||
+        card.dataset.category === category
+      ) {
+
+        card.style.display = "block";
+        found++;
+
+      } else {
+
+        card.style.display = "none";
+
+      }
+
+    });
+
+    document.getElementById("noResult").style.display =
+      found === 0 ? "block" : "none";
+
+  }
+
+</script>
+
+</body>
+</html>
