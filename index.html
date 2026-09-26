@@ -1,681 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DealHub - Best Deals & Coupons</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+    <title>DealHub - Best Coupons, Promo Codes & Deals</title>
+    <meta name="description"
+          content="Find the latest coupons, promo codes, discounts and deals from your favorite stores.">
 
-    body {
-      background: #f6f7fb;
-      color: #222;
-    }
-
-    /* NAVBAR */
-    nav {
-      height: 70px;
-      background: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 8%;
-      box-shadow: 0 2px 12px rgba(0,0,0,.08);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .logo {
-      font-size: 27px;
-      font-weight: bold;
-      color: #5b4de8;
-    }
-
-    .menu {
-      display: flex;
-      list-style: none;
-      gap: 30px;
-    }
-
-    .menu a {
-      text-decoration: none;
-      color: #333;
-      font-size: 16px;
-      font-weight: 500;
-    }
-
-    .menu a:hover {
-      color: #5b4de8;
-    }
-
-    /* HERO */
-    .hero {
-      min-height: 450px;
-      padding: 70px 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      color: white;
-      background:
-        linear-gradient(
-          135deg,
-          #5b4de8,
-          #8b5cf6
-        );
-    }
-
-    .hero-content {
-      max-width: 750px;
-    }
-
-    .hero h1 {
-      font-size: 50px;
-      margin-bottom: 15px;
-    }
-
-    .hero p {
-      font-size: 19px;
-      margin-bottom: 30px;
-      opacity: .95;
-    }
-
-    .search-box {
-      width: 100%;
-      max-width: 600px;
-      height: 55px;
-      padding: 0 20px;
-      border: none;
-      border-radius: 30px;
-      font-size: 16px;
-      outline: none;
-    }
-
-    /* SECTION */
-    section {
-      padding: 65px 8%;
-    }
-
-    .section-title {
-      text-align: center;
-      font-size: 32px;
-      margin-bottom: 40px;
-    }
-
-    /* CATEGORIES */
-    .categories {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-    }
-
-    .category {
-      background: white;
-      padding: 28px 15px;
-      text-align: center;
-      border-radius: 12px;
-      box-shadow: 0 5px 18px rgba(0,0,0,.06);
-      cursor: pointer;
-      transition: .3s;
-    }
-
-    .category:hover {
-      transform: translateY(-5px);
-      color: #5b4de8;
-    }
-
-    .category-icon {
-      font-size: 42px;
-      margin-bottom: 12px;
-    }
-
-    .category h3 {
-      font-size: 17px;
-    }
-
-    /* CARDS */
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 25px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 14px;
-      padding: 28px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.07);
-      transition: .3s;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-    }
-
-    .store-icon {
-      width: 65px;
-      height: 65px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #eeeafe;
-      border-radius: 12px;
-      font-size: 32px;
-      margin-bottom: 18px;
-    }
-
-    .card h3 {
-      margin-bottom: 10px;
-    }
-
-    .card p {
-      color: #777;
-      margin-bottom: 18px;
-      line-height: 1.5;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 10px 18px;
-      background: #5b4de8;
-      color: white;
-      text-decoration: none;
-      border-radius: 7px;
-    }
-
-    .btn:hover {
-      background: #493bd0;
-    }
-
-    /* COUPONS */
-    .coupon {
-      border: 2px dashed #5b4de8;
-      position: relative;
-    }
-
-    .discount {
-      font-size: 30px;
-      font-weight: bold;
-      color: #5b4de8;
-      margin-bottom: 10px;
-    }
-
-    .code {
-      display: inline-block;
-      background: #f0efff;
-      padding: 8px 15px;
-      border-radius: 6px;
-      color: #5b4de8;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-
-    /* FOOTER */
-    footer {
-      background: #18181b;
-      color: white;
-      padding: 40px 8%;
-    }
-
-    .footer-content {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 30px;
-    }
-
-    .footer-logo {
-      color: #8b7fff;
-      font-size: 25px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .footer-links a {
-      display: block;
-      color: #ccc;
-      text-decoration: none;
-      margin: 8px 0;
-    }
-
-    .footer-links a:hover {
-      color: white;
-    }
-
-    .copyright {
-      text-align: center;
-      border-top: 1px solid #333;
-      margin-top: 30px;
-      padding-top: 20px;
-      color: #aaa;
-    }
-
-    /* MOBILE */
-    @media(max-width: 768px) {
-
-      nav {
-        padding: 0 20px;
-      }
-
-      .menu {
-        gap: 12px;
-      }
-
-      .menu a {
-        font-size: 13px;
-      }
-
-      .hero h1 {
-        font-size: 36px;
-      }
-
-      .hero p {
-        font-size: 16px;
-      }
-
-      .categories {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .cards {
-        grid-template-columns: 1fr;
-      }
-
-      section {
-        padding: 45px 20px;
-      }
-
-    }
-
-    @media(max-width: 480px) {
-
-      .logo {
-        font-size: 22px;
-      }
-
-      .menu {
-        gap: 8px;
-      }
-
-      .menu a {
-        font-size: 11px;
-      }
-
-      .hero h1 {
-        font-size: 30px;
-      }
-
-    }
-  </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
+    <!-- ================= HEADER ================= -->
+    <header class="site-header">
+        <div class="container nav">
 
-<!-- ================= NAVBAR ================= -->
+            <!-- Logo -->
+            <a href="index.html" class="brand">
+                Deal<span>Hub</span>
+            </a>
 
-<nav>
+            <!-- Navigation -->
+            <nav>
+                <a href="index.html" class="active">Home</a>
+                <a href="stores.html">Stores</a>
+                <a href="coupons.html">Coupons</a>
+                <a href="categories.html">Categories</a>
+            </nav>
 
-  <div class="logo">
-    DealHub
-  </div>
+            <!-- Admin -->
+            <a href="admin/dashboard.html" class="admin-link">
+                Admin
+            </a>
 
-  <ul class="menu">
+        </div>
+    </header>
 
-    <li>
-      <a href="#home">Home</a>
-    </li>
 
-    <li>
-      <a href="#stores">Stores</a>
-    </li>
+    <!-- ================= MAIN ================= -->
+    <main>
 
-    <li>
-      <a href="#coupons">Coupons</a>
-    </li>
+        <!-- ================= HERO ================= -->
+        <section class="hero">
 
-    <li>
-      <a href="#categories">Categories</a>
-    </li>
+            <div class="container hero-inner">
 
-  </ul>
+                <div class="hero-content">
 
-</nav>
+                    <p class="eyebrow">
+                        SAVE MORE • SHOP SMARTER
+                    </p>
 
+                    <h1>
+                        Find the best
+                        <br>
+                        coupons & deals
+                    </h1>
 
-<!-- ================= HERO ================= -->
+                    <p class="hero-copy">
+                        Discover verified promo codes, discounts and
+                        exclusive offers from your favorite stores.
+                    </p>
 
-<section class="hero" id="home">
 
-  <div class="hero-content">
+                    <!-- Search -->
+                    <div class="search">
 
-    <h1>
-      Find The Best Deals
-    </h1>
+                        <input
+                            type="text"
+                            id="homeSearch"
+                            placeholder="Search stores, coupons or categories..."
+                            autocomplete="off"
+                        >
 
-    <p>
-      Discover amazing stores, coupons and
-      discounts all in one place.
-    </p>
+                        <button type="button" onclick="searchHome()">
+                            Search
+                        </button>
 
-    <input
-      type="text"
-      id="search"
-      class="search-box"
-      placeholder="Search stores, coupons or categories..."
-      onkeyup="searchWebsite()"
-    >
+                    </div>
 
-  </div>
+                </div>
 
-</section>
+            </div>
 
+        </section>
 
-<!-- ================= CATEGORIES ================= -->
 
-<section id="categories">
+        <!-- ================= CATEGORIES ================= -->
+        <section class="container section">
 
-  <h2 class="section-title">
-    Browse Categories
-  </h2>
+            <div class="section-head">
 
-  <div class="categories">
+                <div>
+                    <p class="eyebrow">
+                        BROWSE
+                    </p>
 
-    <div class="category">
-      <div class="category-icon">👕</div>
-      <h3>Fashion</h3>
-    </div>
+                    <h2>
+                        Popular Categories
+                    </h2>
+                </div>
 
-    <div class="category">
-      <div class="category-icon">💻</div>
-      <h3>Electronics</h3>
-    </div>
+                <a href="categories.html">
+                    View all →
+                </a>
 
-    <div class="category">
-      <div class="category-icon">🏠</div>
-      <h3>Home & Living</h3>
-    </div>
+            </div>
 
-    <div class="category">
-      <div class="category-icon">✈️</div>
-      <h3>Travel</h3>
-    </div>
 
-    <div class="category">
-      <div class="category-icon">💄</div>
-      <h3>Beauty</h3>
-    </div>
+            <!-- Categories will load from LocalStorage -->
+            <div
+                id="homeCategories"
+                class="category-grid">
+            </div>
 
-    <div class="category">
-      <div class="category-icon">🍔</div>
-      <h3>Food</h3>
-    </div>
+        </section>
 
-    <div class="category">
-      <div class="category-icon">🎮</div>
-      <h3>Gaming</h3>
-    </div>
 
-    <div class="category">
-      <div class="category-icon">📱</div>
-      <h3>Mobile</h3>
-    </div>
+        <!-- ================= STORES ================= -->
+        <section class="container section">
 
-  </div>
+            <div class="section-head">
 
-</section>
+                <div>
+                    <p class="eyebrow">
+                        FEATURED
+                    </p>
 
+                    <h2>
+                        Popular Stores
+                    </h2>
+                </div>
 
-<!-- ================= STORES ================= -->
+                <a href="stores.html">
+                    View all →
+                </a>
 
-<section id="stores">
+            </div>
 
-  <h2 class="section-title">
-    Popular Stores
-  </h2>
 
-  <div class="cards" id="storeContainer">
+            <!-- Stores will load from LocalStorage -->
+            <div
+                id="homeStores"
+                class="store-grid">
+            </div>
 
-    <div class="card searchable">
+        </section>
 
-      <div class="store-icon">
-        🛒
-      </div>
 
-      <h3>Amazon</h3>
+        <!-- ================= COUPONS ================= -->
+        <section class="container section">
 
-      <p>
-        Find the latest deals and offers.
-      </p>
+            <div class="section-head">
 
-      <a
-        href="https://www.amazon.com"
-        target="_blank"
-        class="btn">
-        Visit Store
-      </a>
+                <div>
+                    <p class="eyebrow">
+                        LATEST
+                    </p>
 
-    </div>
+                    <h2>
+                        Latest Coupons
+                    </h2>
 
+                </div>
 
-    <div class="card searchable">
+                <a href="coupons.html">
+                    View all →
+                </a>
 
-      <div class="store-icon">
-        👕
-      </div>
+            </div>
 
-      <h3>Fashion Store</h3>
 
-      <p>
-        Save money on fashion products.
-      </p>
+            <!-- Coupons will load from LocalStorage -->
+            <div
+                id="homeCoupons"
+                class="coupon-grid">
+            </div>
 
-      <a href="#" class="btn">
-        Visit Store
-      </a>
+        </section>
 
-    </div>
+    </main>
 
 
-    <div class="card searchable">
+    <!-- ================= FOOTER ================= -->
+    <footer>
 
-      <div class="store-icon">
-        💻
-      </div>
+        <div class="container footer-inner">
 
-      <h3>Tech Store</h3>
+            <strong>
+                DealHub
+            </strong>
 
-      <p>
-        Get the best technology deals.
-      </p>
+            <span>
+                Coupons, Promo Codes & Deals
+            </span>
 
-      <a href="#" class="btn">
-        Visit Store
-      </a>
+        </div>
 
-    </div>
+    </footer>
 
-  </div>
 
-</section>
+    <!-- ================= JAVASCRIPT ================= -->
 
+    <!-- LocalStorage Database -->
+    <script src="js/storage.js"></script>
 
-<!-- ================= COUPONS ================= -->
+    <!-- Frontend Functions -->
+    <script src="js/app.js"></script>
 
-<section id="coupons">
 
-  <h2 class="section-title">
-    Latest Coupons
-  </h2>
+    <script>
 
-  <div class="cards" id="couponContainer">
+        /*
+         * Home page search
+         *
+         * User search ko coupons.html par bhejta hai.
+         *
+         * Example:
+         * coupons.html?search=nike
+         */
 
-    <div class="card coupon searchable">
+        function searchHome() {
 
-      <div class="discount">
-        20% OFF
-      </div>
+            const input =
+                document.getElementById("homeSearch");
 
-      <h3>Amazon Discount</h3>
+            const query =
+                input.value.trim();
 
-      <p>
-        Get 20% off on selected products.
-      </p>
 
-      <div class="code">
-        SAVE20
-      </div>
+            if (!query) {
 
-      <br>
+                window.location.href =
+                    "coupons.html";
 
-      <a href="#" class="btn">
-        Get Coupon
-      </a>
+                return;
+            }
 
-    </div>
 
+            window.location.href =
+                "coupons.html?search=" +
+                encodeURIComponent(query);
+        }
 
-    <div class="card coupon searchable">
 
-      <div class="discount">
-        50% OFF
-      </div>
+        /*
+         * Enter key se bhi search chalega
+         */
 
-      <h3>Fashion Deal</h3>
+        document
+            .getElementById("homeSearch")
+            .addEventListener("keydown", function(event) {
 
-      <p>
-        Limited-time discount on fashion.
-      </p>
+                if (event.key === "Enter") {
 
-      <div class="code">
-        FASHION50
-      </div>
+                    searchHome();
 
-      <br>
+                }
 
-      <a href="#" class="btn">
-        Get Coupon
-      </a>
+            });
 
-    </div>
 
+        /*
+         * Homepage data render
+         *
+         * Data:
+         * - Categories
+         * - Stores
+         * - Coupons
+         *
+         * LocalStorage se aayega.
+         */
 
-    <div class="card coupon searchable">
+        if (typeof renderHome === "function") {
 
-      <div class="discount">
-        10% OFF
-      </div>
+            renderHome();
 
-      <h3>Tech Discount</h3>
+        }
 
-      <p>
-        Save money on selected technology.
-      </p>
-
-      <div class="code">
-        TECH10
-      </div>
-
-      <br>
-
-      <a href="#" class="btn">
-        Get Coupon
-      </a>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- ================= FOOTER ================= -->
-
-<footer>
-
-  <div class="footer-content">
-
-    <div>
-
-      <div class="footer-logo">
-        DealHub
-      </div>
-
-      <p>
-        Find the best deals and coupons.
-      </p>
-
-    </div>
-
-
-    <div class="footer-links">
-
-      <h3>Quick Links</h3>
-
-      <a href="#home">Home</a>
-
-      <a href="#stores">Stores</a>
-
-      <a href="#coupons">Coupons</a>
-
-      <a href="#categories">Categories</a>
-
-    </div>
-
-  </div>
-
-
-  <div class="copyright">
-
-    © 2026 DealHub. All Rights Reserved.
-
-  </div>
-
-</footer>
-
-
-<!-- ================= JAVASCRIPT ================= -->
-
-<script>
-
-  function searchWebsite() {
-
-    const search =
-      document
-      .getElementById("search")
-      .value
-      .toLowerCase();
-
-    const cards =
-      document.querySelectorAll(".searchable");
-
-    cards.forEach(function(card) {
-
-      const text =
-        card.textContent.toLowerCase();
-
-      if (text.includes(search)) {
-
-        card.style.display = "";
-
-      } else {
-
-        card.style.display = "none";
-
-      }
-
-    });
-
-  }
-
-</script>
+    </script>
 
 </body>
 </html>
