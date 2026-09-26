@@ -545,6 +545,48 @@
 
 <script src="../js/storage.js"></script>
 
+  <script>
+const DB = {
+    categories: function () {
+        try {
+            return JSON.parse(
+                localStorage.getItem("dealhub_categories")
+            ) || [];
+        } catch (e) {
+            return [];
+        }
+    },
+
+    saveCategories: function (data) {
+        localStorage.setItem(
+            "dealhub_categories",
+            JSON.stringify(data)
+        );
+        return data;
+    },
+
+    stores: function () {
+        try {
+            return JSON.parse(
+                localStorage.getItem("dealhub_stores")
+            ) || [];
+        } catch (e) {
+            return [];
+        }
+    },
+
+    coupons: function () {
+        try {
+            return JSON.parse(
+                localStorage.getItem("dealhub_coupons")
+            ) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+};
+</script>
+
 
 <!-- CATEGORY SCRIPT -->
 
